@@ -11,6 +11,26 @@ class OpsTests: XCTestCase {
         setDefaultDevice()
     }
 
+    func testPadded() {
+        let a = MLXArray(0 ..< 12, [4, 3])
+        let b = padded(a, width: 1)
+        assertEqual(b.shape.asMLXArray(dtype: .int32), [6, 5])
+        let c = padded(a, widths: [1, 2])
+        assertEqual(c.shape.asMLXArray(dtype: .int32), [6, 7])
+        let d = padded(a, width: 1, mode: .edge)
+        assertEqual(
+            d,
+            MLXArray(
+                [
+                    0, 0, 1, 2, 2,
+                    0, 0, 1, 2, 2,
+                    3, 3, 4, 5, 5,
+                    6, 6, 7, 8, 8,
+                    9, 9, 10, 11, 11,
+                    9, 9, 10, 11, 11,
+                ], [6, 5]))
+    }
+
     func testAsStridedReshape() {
         // just changing the shape and using the default strides is the same as reshape
         let a = MLXArray(0 ..< 12, [4, 3])
