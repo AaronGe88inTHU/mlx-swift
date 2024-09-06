@@ -52,7 +52,8 @@ make \
     ternary_ops \
     unary \
     unary_ops \
-    utils
+    utils \
+    gemv_masked
 
 cd ../common
 make cpu_compiled_preamble

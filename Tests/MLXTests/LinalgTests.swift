@@ -54,4 +54,23 @@ class LinalgTests: XCTestCase {
         assertEqual(q, MLXArray(converting: [-0.894427, -0.447214, -0.447214, 0.894427], [2, 2]))
         assertEqual(r, MLXArray(converting: [-2.23607, -3.57771, 0, 0.447214], [2, 2]))
     }
+
+    func testCholesky() {
+        let a = MLXArray(converting: [9, 3, 1, 5, 3, 7, 5, 1, 1, 5, 9, 2, 5, 1, 2, 6], [4, 4])
+        let l = cholesky(a, stream: .cpu)
+        let lt = transposed(l)
+        assertEqual(matmul(l, lt), a)
+
+        let u = cholesky(a, upper: true, stream: .cpu)
+        let ut = transposed(u)
+        assertEqual(matmul(ut, u), a)
+    }
+
+    func testCholeskyInv() {
+        let a = MLXArray(converting: [9, 3, 1, 5, 3, 7, 5, 1, 1, 5, 9, 2, 5, 1, 2, 6], [4, 4])
+        let l = cholesky(a, stream: .cpu)
+        let aCholeskyInv = choleskyInv(l, stream: .cpu)
+        let aInv = inv(a, stream: .cpu)
+        assertEqual(aCholeskyInv, aInv)
+    }
 }

@@ -107,7 +107,8 @@ function(run_tests)
               "test-${test_name}"
       WORKING_DIRECTORY "${build_directory}"
       RESULT_VARIABLE result_var
-      OUTPUT_VARIABLE output_var ERROR_QUIET)
+      OUTPUT_VARIABLE output_var
+      ERROR_QUIET)
     if(result_var EQUAL 0)
       message(
         SEND_ERROR "No compile error for \"${test_name}\":\n${output_var}")

@@ -219,6 +219,11 @@ public func inv(_ array: MLXArray, stream: StreamOrDevice = .default) -> MLXArra
     MLXArray(mlx_linalg_inv(array.ctx, stream.ctx))
 }
 
+public func triInv(_ array: MLXArray, upper: Bool = false, stream: StreamOrDevice = .default)
+    -> MLXArray
+{
+    MLXArray(mlx_linalg_tri_inv(array.ctx, upper, stream.ctx))
+}
 /// Compute the Cholesky decomposition of a real symmetric positive semi-definite matrix.
 ///
 /// This function supports arrays with at least 2 dimensions. When the input
@@ -230,10 +235,25 @@ public func inv(_ array: MLXArray, stream: StreamOrDevice = .default) -> MLXArra
 /// - Parameters:
 ///   - array: input array
 ///   - upper: if true return the upper triangular Cholesky factor, otherwise the lower triangular
-///         Cholesky factor.
 ///   - stream: stream or device to evaluate on
 public func cholesky(_ array: MLXArray, upper: Bool = false, stream: StreamOrDevice = .default)
     -> MLXArray
 {
     MLXArray(mlx_linalg_cholesky(array.ctx, upper, stream.ctx))
+}
+
+/// Compute the inverse of a real symmetric positive semi-definite matrix using it’s Cholesky decomposition.
+///
+/// This function supports arrays with at least 2 dimensions. When the input has more than two dimensions, the Cholesky inverse is computed for each matrix in the last two dimensions of
+///
+/// If the input matrix is not a triangular matrix behaviour is undefined.
+///
+///   - Parameters:
+///     - array: input array
+///     - upper: if true return the upper triangular Cholesky factor, otherwise the lower triangular
+///     - stream: stream or device to evaluate on
+public func choleskyInv(_ array: MLXArray, upper: Bool = false, stream: StreamOrDevice = .default)
+    -> MLXArray
+{
+    MLXArray(mlx_linalg_cholesky_inv(array.ctx, upper, stream.ctx))
 }

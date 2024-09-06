@@ -4,7 +4,13 @@ import Cmlx
 import Foundation
 
 // MARK: - Internal Ops
-
+///Type of device.
+///
+///See ``padded(_:width:value:mode:stream:)`` .
+public enum PaddedMode: String, Hashable, Sendable {
+    case constant
+    case edge
+}
 /// Broadcast a vector of arrays against one another.
 func broadcast(arrays: [MLXArray], stream: StreamOrDevice = .default) -> [MLXArray] {
     let vector_array = new_mlx_vector_array(arrays)
@@ -1592,16 +1598,20 @@ public func outer(
 /// - <doc:shapes>
 /// - ``padded(_:widths:value:stream:)``
 public func padded(
-    _ array: MLXArray, width: IntOrPair, value: MLXArray? = nil, stream: StreamOrDevice = .default
+    _ array: MLXArray, width: IntOrPair, value: MLXArray? = nil, mode: PaddedMode? = nil,
+    stream: StreamOrDevice = .default
 ) -> MLXArray {
     let ndim = array.ndim
     let axes = Array(Int32(0) ..< Int32(ndim))
     let lowPads = (0 ..< ndim).map { _ in width.first.int32 }
     let highPads = (0 ..< ndim).map { _ in width.second.int32 }
     let value = value ?? MLXArray(0, dtype: array.dtype)
+    let mode = mode ?? .constant
 
     return MLXArray(
-        mlx_pad(array.ctx, axes, ndim, lowPads, ndim, highPads, ndim, value.ctx, stream.ctx))
+        mlx_pad(
+            array.ctx, axes, ndim, lowPads, ndim, highPads, ndim, value.ctx,
+            mlx_string_new(mode.rawValue.cString(using: .utf8)), stream.ctx))
 }
 
 /// Pad an array with a constant value.
@@ -1616,7 +1626,7 @@ public func padded(
 /// - <doc:shapes>
 /// - ``padded(_:width:value:stream:)``
 public func padded(
-    _ array: MLXArray, widths: [IntOrPair], value: MLXArray? = nil,
+    _ array: MLXArray, widths: [IntOrPair], value: MLXArray? = nil, mode: PaddedMode? = nil,
     stream: StreamOrDevice = .default
 ) -> MLXArray {
     let ndim = array.ndim
@@ -1624,9 +1634,12 @@ public func padded(
     let lowPads = widths.map { $0.first.int32 }
     let highPads = widths.map { $0.second.int32 }
     let value = value ?? MLXArray(0, dtype: array.dtype)
+    let mode = mode ?? .constant
 
     return MLXArray(
-        mlx_pad(array.ctx, axes, ndim, lowPads, ndim, highPads, ndim, value.ctx, stream.ctx))
+        mlx_pad(
+            array.ctx, axes, ndim, lowPads, ndim, highPads, ndim, value.ctx,
+            mlx_string_new(mode.rawValue.cString(using: .utf8)), stream.ctx))
 }
 
 /// Returns a partitioned copy of the array such that the smaller `kth`
@@ -2331,6 +2344,40 @@ public func tril(_ array: MLXArray, k: Int = 0, stream: StreamOrDevice = .defaul
 /// - ``tril(_:k:stream:)``
 public func triu(_ array: MLXArray, k: Int = 0, stream: StreamOrDevice = .default) -> MLXArray {
     MLXArray(mlx_triu(array.ctx, k.int32, stream.ctx))
+}
+
+/// Replace NaN and Inf values with finite numbers.
+///
+/// - Parameters:
+///     - array: input array
+///     - nan: value to replace NaN. Default: 0
+///     - posinf: value to replace positive infinity. If nil, defaults to largest finite value for the given data type. Default: ni
+///     - neginf: value to replace negative infinity. If nil, defaults to smallest finite value for the given data type. Default: ni
+///     - stream: stream or device to evaluate on
+public func nanToNum(
+    _ array: MLXArray, nan: Float = 0, posinf: Float? = nil, neginf: Float? = nil,
+    stream: StreamOrDevice = .default
+) -> MLXArray {
+
+    var posinf_: UnsafeMutablePointer<Float>? = nil
+    if let posinf = posinf {
+        posinf_ = UnsafeMutablePointer<Float>.allocate(capacity: 1)
+        posinf_?.initialize(to: posinf)
+    }
+    var neginf_: UnsafeMutablePointer<Float>? = nil
+    if let neginf = neginf {
+        neginf_ = UnsafeMutablePointer<Float>.allocate(capacity: 1)
+        neginf_?.initialize(to: neginf)
+    }
+    defer {
+        neginf_?.deinitialize(count: 1)
+        neginf_?.deallocate()
+        posinf_?.deinitialize(count: 1)
+        posinf_?.deallocate()
+    }
+
+    return MLXArray(mlx_nan_to_num(array.ctx, nan, posinf_, neginf_, stream.ctx))
+
 }
 
 /// Select from `x` or `y` according to `condition`.

@@ -94,4 +94,12 @@ class OpsTests: XCTestCase {
         XCTAssertEqual(c.dtype, .float32)
     }
 
+    func testNanToNum() {
+        let a = MLXArray([6, Float.infinity, Float.nan, 0])
+        var out_mx = nanToNum(a)
+        assertEqual(out_mx, MLXArray(converting: [6, 3.40282e+38, 0, 0]))
+        out_mx = nanToNum(a, nan: 0, posinf: 1000, neginf: -1)
+        assertEqual(out_mx, MLXArray(converting: [6, 1000, 0, 0]))
+    }
+
 }

@@ -10,8 +10,8 @@ endif()
 # mlx-c
 FetchContent_Declare(
   mlx-c
-  GIT_REPOSITORY "https://github.com/ml-explore/mlx-c.git"
-  GIT_TAG "v0.0.9")
+  GIT_REPOSITORY "https://github.com/AaronGe88inTHU/mlx-c.git"
+  GIT_TAG "v0.17.1")
 FetchContent_MakeAvailable(mlx-c)
 
 # swift-numerics

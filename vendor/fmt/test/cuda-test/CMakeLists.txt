@@ -57,8 +57,10 @@ else()
       SOURCE cuda-cpp14.cu
       APPEND
       PROPERTY COMPILE_OPTIONS -Xcompiler /std:c++14 -Xcompiler /Zc:__cplusplus)
-    set_property(SOURCE cpp14.cc APPEND PROPERTY COMPILE_OPTIONS /std:c++14
-                                                 /Zc:__cplusplus)
+    set_property(
+      SOURCE cpp14.cc
+      APPEND
+      PROPERTY COMPILE_OPTIONS /std:c++14 /Zc:__cplusplus)
   endif()
 endif()
 

@@ -20,5 +20,8 @@ struct Example1 {
 
         // print a value
         print(arr[0, 1].item(Int32.self))
+        
+        let sums = arr.sum(axis: 0)
+        print("sums: {\(sums)}")
     }
 }
