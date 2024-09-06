@@ -1,6 +1,3 @@
-[submodule "submodules/mlx"]
-	path = Source/Cmlx/mlx
-	url = https://github.com/ml-explore/mlx
 [submodule "Source/Cmlx/mlx-c"]
 	path = Source/Cmlx/mlx-c
 	url = https://github.com/AaronGe88inTHU/mlx-c.git
