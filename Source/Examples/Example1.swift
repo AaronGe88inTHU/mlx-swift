@@ -23,5 +23,8 @@ struct Example1 {
 
         let sums = arr.sum(axis: 0)
         print("sums: {\(sums)}")
+        
+        let padded = padded(arr, width: 1)
+        print("padded: {\(padded)}")
     }
 }
