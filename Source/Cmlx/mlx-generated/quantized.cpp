@@ -1310,8 +1310,7 @@ template <typename T, const int group_size, const int bits>
     device uint8_t* out [[buffer(1)]],
     device T* scales [[buffer(2)]],
     device T* biases [[buffer(3)]],
-    uint2 index [[thread_position_in_grid]],
-    uint2 grid_dim [[threads_per_grid]]) {
+    uint index [[thread_position_in_grid]]) {
   constexpr T eps = T(1e-7);
   constexpr int simd_size = 32;
   constexpr int uint8_bits = 8;
@@ -1324,9 +1323,8 @@ template <typename T, const int group_size, const int bits>
   static_assert(
       group_size % simd_size == 0,
       "Group size must be divisible by simd size.");
-  size_t offset = index.x + grid_dim.x * size_t(index.y);
-  size_t in_index = offset * values_per_reduce;
-  size_t out_index = offset * writes_per_pack;
+  int in_index = index * values_per_reduce;
+  int out_index = index * writes_per_pack;
   T w_thread[values_per_reduce];
   T w_min = Limits<T>::max;
   T w_max = 0;
@@ -1347,7 +1345,7 @@ template <typename T, const int group_size, const int bits>
   bool at_zero = q0 == 0.0f;
   scale = at_zero ? scale : edge / q0;
   T bias = at_zero ? T(0) : edge;
-  size_t gindex = in_index / group_size;
+  int gindex = in_index / group_size;
   if (in_index % group_size == 0) {
     scales[gindex] = scale;
     biases[gindex] = bias;
@@ -1383,14 +1381,12 @@ template <typename T, const int group_size, const int bits>
     const device T* scales [[buffer(1)]],
     const device T* biases [[buffer(2)]],
     device uint8_t* out [[buffer(3)]],
-    uint2 index [[thread_position_in_grid]],
-    uint2 grid_dim [[threads_per_grid]]) {
+    uint index [[thread_position_in_grid]]) {
   constexpr int uint8_bits = 8;
   constexpr int packs_per_int = uint8_bits / bits;
   constexpr T n_bins = (1 << bits) - 1;
-  size_t offset = index.x + grid_dim.x * size_t(index.y);
-  size_t in_index = offset * packs_per_int;
-  size_t gindex = in_index / group_size;
+  int in_index = index * packs_per_int;
+  int gindex = in_index / group_size;
   T scale = scales[gindex];
   T bias = biases[gindex];
   uint8_t output = 0;
@@ -1403,7 +1399,7 @@ template <typename T, const int group_size, const int bits>
       output += val << (bits * i);
     }
   }
-  out[offset] = output;
+  out[index] = output;
 }
 template <typename T, const int group_size, const int bits>
 [[kernel]] void affine_dequantize(
@@ -1411,16 +1407,14 @@ template <typename T, const int group_size, const int bits>
     const device T* scales [[buffer(1)]],
     const device T* biases [[buffer(2)]],
     device T* out [[buffer(3)]],
-    uint2 index [[thread_position_in_grid]],
-    uint2 grid_dim [[threads_per_grid]]) {
+    uint index [[thread_position_in_grid]]) {
   constexpr int uint8_bits = 8;
   constexpr int packs_per_int = uint8_bits / bits;
-  size_t offset = index.x + grid_dim.x * size_t(index.y);
-  size_t oindex = offset * packs_per_int;
-  size_t gindex = oindex / group_size;
+  int oindex = index * packs_per_int;
+  int gindex = oindex / group_size;
   T scale = scales[gindex];
   T bias = biases[gindex];
-  uint val = w[offset];
+  uint val = w[index];
 #pragma clang loop unroll(full)
   for (int i = 0; i < packs_per_int; i++) {
     uint8_t d;

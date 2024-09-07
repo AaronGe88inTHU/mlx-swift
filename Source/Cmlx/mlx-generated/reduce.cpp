@@ -58,7 +58,7 @@ template <
     typename T,
     typename U,
     typename Op,
-    int NDIMS,
+    int NDIMS = 0,
     int N_READS = REDUCE_N_READS>
 [[kernel]] void col_reduce_small(
     const device T* in [[buffer(0)]],
@@ -212,7 +212,13 @@ template <
     }
   }
 }
-template <typename T, typename U, typename Op, int NDIMS, int BM, int BN>
+template <
+    typename T,
+    typename U,
+    typename Op,
+    int NDIMS = 0,
+    int BM = 8,
+    int BN = 128>
 [[kernel]] void col_reduce_looped(
     const device T* in [[buffer(0)]],
     device U* out [[buffer(1)]],
@@ -473,7 +479,7 @@ template <
     typename T,
     typename U,
     typename Op,
-    int NDIMS,
+    int NDIMS = 0,
     int N_READS = REDUCE_N_READS>
 [[kernel]] void row_reduce_small(
     const device T* in [[buffer(0)]],
@@ -563,7 +569,7 @@ template <
     typename T,
     typename U,
     typename Op,
-    int NDIMS,
+    int NDIMS = 0,
     int N_READS = REDUCE_N_READS>
 [[kernel]] void row_reduce_looped(
     const device T* in [[buffer(0)]],
