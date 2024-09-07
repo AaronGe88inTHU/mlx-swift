@@ -1606,12 +1606,15 @@ public func padded(
     let lowPads = (0 ..< ndim).map { _ in width.first.int32 }
     let highPads = (0 ..< ndim).map { _ in width.second.int32 }
     let value = value ?? MLXArray(0, dtype: array.dtype)
-    let mode = mode ?? .constant
+//    let mode = mode ?? .constant
+    let mode = mlx_string_new("constant")
+    
+    
 
     return MLXArray(
         mlx_pad(
             array.ctx, axes, ndim, lowPads, ndim, highPads, ndim, value.ctx,
-            mlx_string_new(mode.rawValue.cString(using: .utf8)), stream.ctx))
+            mode, stream.ctx))
 }
 
 /// Pad an array with a constant value.

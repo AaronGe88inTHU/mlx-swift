@@ -14,7 +14,7 @@ fi
 
 mkdir build
 cd build
-cmake ../Source/Cmlx/mlx -DMLX_METAL_JIT=ON -DMACOS_VERSION=14.0
+cmake ../Source/Cmlx/mlx -DMLX_METAL_JIT=ON -DMACOS_VERSION=15.0
 
 # NOTE:
 # until mlx supports overriding the METAL_VERSION you will need to edit
