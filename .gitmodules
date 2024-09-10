@@ -2,6 +2,3 @@
 	path = Source/Cmlx/mlx-c
 	url = https://github.com/AaronGe88inTHU/mlx-c.git
 	branch = v0.17.1
-[submodule "r"]
-	path = Source/Cmlx/mlx
-	url = https://github.com/ml-explore/mlx.git

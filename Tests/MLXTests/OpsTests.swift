@@ -112,5 +112,11 @@ class OpsTests: XCTestCase {
         out_mx = nanToNum(a, nan: 0, posinf: 1000, neginf: -1)
         assertEqual(out_mx, MLXArray(converting: [6, 1000, 0, 0]))
     }
+    
+    func testArgSort(){
+        let a = truncatedNormal(low: 0, high: 1, [65,65])
+        let sortedIndex = argSort(a)
+        eval(sortedIndex)
+    }
 
 }
