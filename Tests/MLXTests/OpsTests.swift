@@ -113,6 +113,14 @@ class OpsTests: XCTestCase {
         assertEqual(out_mx, MLXArray(converting: [6, 1000, 0, 0]))
     }
     
+    func testIsFinite(){
+        let a = truncatedNormal(low: 0, high: 1, [3,3])
+        a[] = Float.infinity.asMLXArray(dtype: .float32)
+        XCTAssertFalse(isFinite(a).any().item())
+        a[2,2] = 2.asMLXArray(dtype: .float32)
+        XCTAssertTrue(isFinite(a).any().item())
+    }
+    
     func testArgSort(){
         let a = truncatedNormal(low: 0, high: 1, [65,65])
         let sortedIndex = argSort(a)

@@ -1150,6 +1150,20 @@ public func isPosInf(_ array: MLXArray, stream: StreamOrDevice = .default) -> ML
     MLXArray(mlx_isposinf(array.ctx, stream.ctx))
 }
 
+
+/// Return a boolean array indicating which elements are finity.
+///
+/// - Parameters:
+///   - array: input array
+///   - stream: stream or device to evaluate on
+/// - Returns: The boolean array indicating which elements are finity.
+///
+/// ### See Also
+/// - <doc:arithmetic>
+public func isFinite(_ array: MLXArray, stream: StreamOrDevice = .default) -> MLXArray{
+    MLXArray(mlx_isfinite(array.ctx, stream.ctx))
+}
+
 /// Element-wise less than.
 ///
 /// Less than on two arrays with <doc:broadcasting>.
